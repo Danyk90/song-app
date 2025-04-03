@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/songs")
+@RequestMapping("/songs")
 public class SongServiceController {
 
     @Autowired
@@ -41,7 +41,7 @@ public class SongServiceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SongsMetaDataEntity> updateResource(@PathVariable Long id, @RequestBody SongsDTO songsDTO) {
-        if (!songsMetaDataService.findById(id).isPresent()) {
+        if (songsMetaDataService.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         songsDTO.setId(id);
