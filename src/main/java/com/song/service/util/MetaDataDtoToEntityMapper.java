@@ -16,7 +16,7 @@ public class MetaDataDtoToEntityMapper {
         entity.setArtist(dto.getArtist());
         entity.setAlbum(dto.getAlbum());
         entity.setDuration(dto.getDuration());
-        entity.setYear(dto.getYear());
+        entity.setYear(String.valueOf(dto.getYear()));
         return entity;
     }
 
@@ -30,7 +30,7 @@ public class MetaDataDtoToEntityMapper {
         dto.setArtist(entity.getArtist());
         dto.setAlbum(entity.getAlbum());
         dto.setDuration(entity.getDuration());
-        dto.setYear(entity.getYear());
+        dto.setYear(Integer.valueOf(entity.getYear()));
         return dto;
     }
 }

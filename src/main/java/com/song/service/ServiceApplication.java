@@ -6,9 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ServiceApplication.class, args);
-		System.out.println("hello g");
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ServiceApplication.class, args);
+    }
 
 }

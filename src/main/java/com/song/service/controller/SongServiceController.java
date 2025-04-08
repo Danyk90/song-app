@@ -2,16 +2,18 @@ package com.song.service.controller;
 
 import com.song.service.dto.SongsDTO;
 import com.song.service.entity.SongsMetaDataEntity;
+import com.song.service.exception.CSVStringException;
 import com.song.service.processingservice.SongsMetaDataService;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/songs")
 public class SongServiceController {
@@ -25,50 +27,29 @@ public class SongServiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SongsMetaDataEntity> getResourceById(@PathVariable Long id) {
+    public ResponseEntity<SongsMetaDataEntity> getResourceById(@PathVariable @Valid Long id) {
         Optional<SongsMetaDataEntity> resource = songsMetaDataService.findById(id);
-        return resource.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return resource.map(res -> ResponseEntity.ok(res)).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<?> createResource(@RequestBody SongsDTO songsDTO) {
-        if (songsMetaDataService.findById(songsDTO.getId()).isPresent()) {
-            return ResponseEntity.status(409).body("Metadata for this ID already exists.");
-        }
-        SongsMetaDataEntity createdEntity = songsMetaDataService.save(songsDTO);
-        return ResponseEntity.ok(createdEntity);
+    public ResponseEntity<?> createResource(@Valid @RequestBody SongsDTO songsDTO) {
+
+        return songsMetaDataService.save(songsDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SongsMetaDataEntity> updateResource(@PathVariable Long id, @RequestBody SongsDTO songsDTO) {
-        if (songsMetaDataService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        songsDTO.setId(id);
-        return ResponseEntity.ok(songsMetaDataService.save(songsDTO));
+    public ResponseEntity<?> updateResource(@PathVariable @Valid Long id, @RequestBody @Valid SongsDTO songsDTO) {
+
+        return songsMetaDataService.save(songsDTO);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteResources(@RequestParam String id) {
+    public ResponseEntity<?> deleteResources(@RequestParam @Valid String id) {
+        log.info("--delete resoruces--");
         if (id.length() > 200) {
-            return ResponseEntity.badRequest().body("CSV string length exceeds 200 characters.");
+            throw new CSVStringException("maximum allowed is 200");
         }
-
-        String[] idArray = id.split(",");
-        List<Long> deletedIds = new ArrayList<>();
-
-        for (String idStr : idArray) {
-            try {
-                Long idLong = Long.parseLong(idStr.trim());
-                if (songsMetaDataService.findById(idLong).isPresent()) {
-                    songsMetaDataService.deleteById(idLong);
-                    deletedIds.add(idLong);
-                }
-            } catch (NumberFormatException e) {
-                return ResponseEntity.badRequest().body("Invalid ID format: " + idStr);
-            }
-        }
-
-        return ResponseEntity.ok(Collections.singletonMap("ids", deletedIds));
+        return songsMetaDataService.deleteById(id);
     }
 }
