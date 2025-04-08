@@ -1,7 +1,6 @@
 package com.project.mp3resourceservice.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Transient;
 
 @JsonSerialize
@@ -15,7 +14,7 @@ public class Mp3MetadataDto {
     private String name;
     private String duration;
     private String year;
-   @Transient
+    @Transient
     private byte[] data;
 
 

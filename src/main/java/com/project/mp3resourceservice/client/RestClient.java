@@ -12,15 +12,15 @@ public class RestClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    public void saveMetadata(String url, Mp3MetadataDto mp3FileMetadata) {
+    public void saveSongMetadata(String url, Mp3MetadataDto mp3FileMetadata) {
         restTemplate.postForObject(url, mp3FileMetadata, Mp3MetadataDto.class);
     }
 
-    public Mp3MetadataDto fetchMetadata(String url, Long id) {
+    public Mp3MetadataDto fetchSongMetadata(String url, Long id) {
         return restTemplate.getForObject(url + "/" + id, Mp3MetadataDto.class);
     }
 
-    public void deleteMetadata(String url, String ids) {
+    public void deleteSongMetadata(String url, String ids) {
         restTemplate.delete(url + "?id=" + ids);
     }
 }

@@ -4,20 +4,23 @@ import jakarta.persistence.*;
 
 @Entity
 public class Mp3File {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Lob
+    private byte[] data;
+
+    Mp3File() {
+        // Default constructor
+    }
+
 
     protected Mp3File(byte[] data) {
         this.data = data;
     }
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-
-    @Lob
-    private byte[] data;
 
     public static Mp3File create(byte[] data) {
-       return new Mp3File(data);
+        return new Mp3File(data);
     }
 
     public Long getId() {
