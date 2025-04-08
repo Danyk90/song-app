@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class Mp3FileService {
@@ -41,7 +41,7 @@ public class Mp3FileService {
     private RestClient restClient;
 
     private void validateMp3File(MultipartFile file) {
-        if (file.isEmpty() || !file.getOriginalFilename().endsWith(".mp3")) {
+        if (file.isEmpty() || !Objects.requireNonNull(file.getOriginalFilename()).endsWith(".mp3")) {
             throw new InvalidFileFormatException("Invalid MP3 file format");
         }
     }
@@ -101,7 +101,6 @@ public class Mp3FileService {
                 .map(Long::parseLong)
                 .filter(id -> mp3FileRepository.existsById(id))
                 .toList();
-        String idString = idList.stream().map(String::valueOf).collect(Collectors.joining(","));
         restClient.deleteSongMetadata("http://localhost:8090/songs", ids);
         mp3FileRepository.deleteAllById(idList);
         Mp3IdListResponseDto mp3IdListResponseDto = new Mp3IdListResponseDto(idList);
