@@ -28,7 +28,6 @@ public class SongsDTO {
     private String duration;
 
 
-    @Min(value = 1900, message = "Year must be between 1900 and 2099")
-    @Max(value = 2099, message = "Year must be between 1900 and 2099")
-    private Integer year;
+    @Pattern(regexp = "^(19\\d{2}|20\\d{2})$", message = "Year must be between 1900 and 2099")
+    private String year;
 }
