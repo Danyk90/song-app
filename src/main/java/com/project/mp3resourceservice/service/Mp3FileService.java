@@ -1,6 +1,7 @@
 package com.project.mp3resourceservice.service;
 
 import com.project.mp3resourceservice.client.RestClient;
+import com.project.mp3resourceservice.config.SongServiceProperties;
 import com.project.mp3resourceservice.dto.Mp3FileResponseDto;
 import com.project.mp3resourceservice.dto.Mp3IdListResponseDto;
 import com.project.mp3resourceservice.dto.Mp3MetadataDto;
@@ -16,6 +17,8 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.Mp3Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,10 +38,13 @@ import java.util.Optional;
 @Service
 public class Mp3FileService {
 
+    private static final Logger log = LoggerFactory.getLogger(Mp3FileService.class);
     @Autowired
     private Mp3FileRepository mp3FileRepository;
     @Autowired
     private RestClient restClient;
+    @Autowired
+    private SongServiceProperties songServiceProperties;
 
     private void validateMp3File(MultipartFile file) {
         if (file.isEmpty() || !Objects.requireNonNull(file.getOriginalFilename()).endsWith(".mp3")) {
@@ -71,7 +77,8 @@ public class Mp3FileService {
         // restClient.saveSongMetadata("http://localhost:8090/songs", metadataDto);
         // Save to database
         try {
-            restClient.saveSongMetadata("http://localhost:8090/songs", metadataDto);
+            log.info("--songserviceurl--" + songServiceProperties.getUrl());
+            restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
         } catch (org.springframework.web.client.HttpClientErrorException e) {
             throw new RestClientException("Error from RestClient: " + e.getResponseBodyAsString(),
                     e.getStatusCode().value(),
@@ -101,7 +108,7 @@ public class Mp3FileService {
                 .map(Long::parseLong)
                 .filter(id -> mp3FileRepository.existsById(id))
                 .toList();
-        restClient.deleteSongMetadata("http://localhost:8090/songs", ids);
+        restClient.deleteSongMetadata(songServiceProperties.getUrl(), ids);
         mp3FileRepository.deleteAllById(idList);
         Mp3IdListResponseDto mp3IdListResponseDto = new Mp3IdListResponseDto(idList);
         return ResponseEntity.ok(mp3IdListResponseDto);
