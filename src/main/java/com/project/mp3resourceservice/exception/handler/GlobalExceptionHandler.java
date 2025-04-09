@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("errorCode", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("errorMessage", "Invalid ID format: " + ex.getMessage() + ".Only  positive integers are allowed");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler({MissingServletRequestPartException.class, MultipartException.class})

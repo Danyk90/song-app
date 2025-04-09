@@ -27,7 +27,7 @@ public class Mp3FileController {
         return ResponseEntity.ok(mp3File);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = "audio/mpeg")
     public ResponseEntity<?> getMp3FileById(@Valid @PathVariable Long id) {
         return mp3FileService.findById(id);
 
