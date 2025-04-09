@@ -1,0 +1,59 @@
+services:
+  metadataDB-container:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: metadata-db
+      POSTGRES_USER: admin  # Default, can be omitted if unchanged
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"  # Maps container port 5432 to host port 5432
+
+  songDb-container:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: mp3db
+      POSTGRES_USER: admin  # Default, can be omitted if unchanged
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5433:5432"  # Maps container port 5432 to host port 5433 (to avoid conflict)
+  mp3resourceservice:
+    build:
+      context: ./mp3processing
+    container_name: mp3processing-service
+    depends_on:
+      - songDb-container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://songDb-container:5432/mp3db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+      SONG_SERVICE_URL: http://song-service:8080/songs
+
+
+  song-service:
+    build:
+      context: ./song-service
+    container_name: song-service
+    depends_on:
+      - metadataDB-container
+    ports:
+      - "8081:8080"
+      #- "5005:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://metadataDB-container:5432/metadata-db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+
+
+# Related settings for application.properties:
+# 
+# For resource-service:
+# spring.datasource.url=jdbc:postgresql://localhost:5432/resource-db
+# spring.datasource.username=postgres
+# spring.datasource.password=postgres
+#
+# For song-service:
+# spring.datasource.url=jdbc:postgresql://localhost:5433/song-db
+# spring.datasource.username=postgres
+# spring.datasource.password=postgres
