@@ -19,7 +19,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -39,12 +38,16 @@ import java.util.Optional;
 public class Mp3FileService {
 
     private static final Logger log = LoggerFactory.getLogger(Mp3FileService.class);
-    @Autowired
-    private Mp3FileRepository mp3FileRepository;
-    @Autowired
-    private RestClient restClient;
-    @Autowired
-    private SongServiceProperties songServiceProperties;
+
+    private final Mp3FileRepository mp3FileRepository;
+    private final RestClient restClient;
+    private final SongServiceProperties songServiceProperties;
+
+    public Mp3FileService(Mp3FileRepository mp3FileRepository, RestClient restClient, SongServiceProperties songServiceProperties) {
+        this.mp3FileRepository = mp3FileRepository;
+        this.restClient = restClient;
+        this.songServiceProperties = songServiceProperties;
+    }
 
     private void validateMp3File(MultipartFile file) {
         if (file.isEmpty() || !Objects.requireNonNull(file.getOriginalFilename()).endsWith(".mp3")) {
@@ -73,9 +76,6 @@ public class Mp3FileService {
         Mp3File mp3File = Mp3File.create(metadataDto.getData());
         Mp3File savedFile = mp3FileRepository.save(mp3File);
         metadataDto.setId(savedFile.getId());
-        // Mp3MetadataDto mp3MetadataDto = Mp3FileMapper.toDto(savedFile);
-        // restClient.saveSongMetadata("http://localhost:8090/songs", metadataDto);
-        // Save to database
         try {
             log.info("--songserviceurl--" + songServiceProperties.getUrl());
             restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
@@ -84,7 +84,7 @@ public class Mp3FileService {
                     e.getStatusCode().value(),
                     e.getResponseBodyAsString());
         }
-        return Mp3FileToResponseDtoMapper.map(savedFile);
+        return Mp3FileToResponseDtoMapper.mapToResponseDto(savedFile);
     }
 
     public ResponseEntity<?> findById(Long id) {
