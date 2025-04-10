@@ -1,5 +1,4 @@
-// src/main/java/com/song/service/processingservice/ResourcesService.java
-package com.song.service.processingservice;
+package com.song.service.metadataservice;
 
 import com.song.service.dto.Mp3IdListResponseDto;
 import com.song.service.dto.SongsDTO;
@@ -18,8 +17,11 @@ import java.util.*;
 @Service
 public class SongsMetaDataService {
 
-    @Autowired
-    private SongsMetaDataRepository songsMetaDataRepository;
+    private final SongsMetaDataRepository songsMetaDataRepository;
+
+    public SongsMetaDataService(SongsMetaDataRepository songsMetaDataRepository) {
+        this.songsMetaDataRepository = songsMetaDataRepository;
+    }
 
     public List<SongsMetaDataEntity> findAll() {
         return songsMetaDataRepository.findAll();

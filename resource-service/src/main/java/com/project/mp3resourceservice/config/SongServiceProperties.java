@@ -1,22 +1,16 @@
 package com.project.mp3resourceservice.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "song.service")
+@Data
 public class SongServiceProperties {
 
     /**
      * URL for communicating with song-service
      */
     private String url;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 }

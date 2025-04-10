@@ -17,8 +17,11 @@ import java.io.IOException;
 @RequestMapping("/resources")
 public class Mp3FileController {
 
-    @Autowired
-    private Mp3FileService mp3FileService;
+    private final Mp3FileService mp3FileService;
+
+    public Mp3FileController(Mp3FileService mp3FileService) {
+        this.mp3FileService = mp3FileService;
+    }
 
     @PostMapping
     public ResponseEntity<?> uploadMp3File(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
