@@ -3,7 +3,7 @@ package com.song.service.controller;
 import com.song.service.dto.SongsDTO;
 import com.song.service.entity.SongsMetaDataEntity;
 import com.song.service.exception.CSVStringException;
-import com.song.service.processingservice.SongsMetaDataService;
+import com.song.service.metadataservice.SongsMetaDataService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class SongServiceController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteResources(@RequestParam @Valid String id) {
-        log.info("--delete resoruces--");
+        log.info("--delete resources--");
         if (id.length() > 200) {
             throw new CSVStringException("maximum allowed is 200");
         }
