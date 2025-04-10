@@ -1,9 +1,9 @@
-package com.project.mp3resourceservice.exception.handler;
+package com.project.resourceservice.exception.handler;
 
-import com.project.mp3resourceservice.dto.ErrorResponseDto;
-import com.project.mp3resourceservice.exception.CSVStringException;
-import com.project.mp3resourceservice.exception.ResourceNotFoundException;
-import com.project.mp3resourceservice.exception.RestClientException;
+import com.project.resourceservice.dto.ErrorResponseDto;
+import com.project.resourceservice.exception.CSVStringException;
+import com.project.resourceservice.exception.ResourceNotFoundException;
+import com.project.resourceservice.exception.RestClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.apache.tika.exception.TikaException;

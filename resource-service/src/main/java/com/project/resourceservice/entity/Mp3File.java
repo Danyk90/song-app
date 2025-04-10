@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.entity;
+package com.project.resourceservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

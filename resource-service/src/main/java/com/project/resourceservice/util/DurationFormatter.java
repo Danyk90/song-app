@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.util;
+package com.project.resourceservice.util;
 
 import java.time.Duration;
 

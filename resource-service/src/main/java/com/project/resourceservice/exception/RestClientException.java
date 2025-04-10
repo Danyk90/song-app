@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.exception;
+package com.project.resourceservice.exception;
 
 public class RestClientException extends RuntimeException {
     private final int statusCode;

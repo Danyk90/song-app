@@ -1,7 +1,7 @@
-package com.project.mp3resourceservice.mapper;
+package com.project.resourceservice.mapper;
 
-import com.project.mp3resourceservice.dto.Mp3FileResponseDto;
-import com.project.mp3resourceservice.entity.Mp3File;
+import com.project.resourceservice.dto.Mp3FileResponseDto;
+import com.project.resourceservice.entity.Mp3File;
 
 public class Mp3FileToResponseDtoMapper {
 

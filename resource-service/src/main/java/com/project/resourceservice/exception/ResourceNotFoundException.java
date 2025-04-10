@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.exception;
+package com.project.resourceservice.exception;
 
 
 public class ResourceNotFoundException extends RuntimeException {

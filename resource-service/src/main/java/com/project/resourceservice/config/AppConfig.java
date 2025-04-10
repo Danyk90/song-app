@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.config;
+package com.project.resourceservice.config;
 
 
 import org.springframework.context.annotation.Bean;

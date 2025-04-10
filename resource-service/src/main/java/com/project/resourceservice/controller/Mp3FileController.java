@@ -1,10 +1,9 @@
-package com.project.mp3resourceservice.controller;
+package com.project.resourceservice.controller;
 
-import com.project.mp3resourceservice.dto.Mp3FileResponseDto;
-import com.project.mp3resourceservice.dto.Mp3IdListResponseDto;
-import com.project.mp3resourceservice.service.Mp3FileService;
+import com.project.resourceservice.dto.Mp3FileResponseDto;
+import com.project.resourceservice.dto.Mp3IdListResponseDto;
+import com.project.resourceservice.service.Mp3FileService;
 import org.apache.tika.exception.TikaException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

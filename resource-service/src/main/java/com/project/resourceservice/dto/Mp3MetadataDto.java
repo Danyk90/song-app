@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.dto;
+package com.project.resourceservice.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.Transient;

@@ -1,4 +1,4 @@
-package com.project.mp3resourceservice.dto;
+package com.project.resourceservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
