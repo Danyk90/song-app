@@ -62,7 +62,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<?> handleNumberFormatException(NumberFormatException ex) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
-                "Invalid ID format: " + ex.getMessage() + ". Only positive integers are allowed", null,
+                "Invalid ID format: " + "'" +
+                        ex.getMessage().replaceAll(".*\"(.*)\".*", "$1") + "'" +
+                        ". Only positive integers are allowed", null,
                 HttpStatus.BAD_REQUEST.value());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
     }

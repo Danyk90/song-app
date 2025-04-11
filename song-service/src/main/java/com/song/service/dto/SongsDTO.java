@@ -25,7 +25,7 @@ public class SongsDTO {
     private String album;
 
     @NotBlank
-    @Pattern(regexp = "^[0-5][0-9]:[0-5][0-9]$", message = "Duration must be in the format mm:ss")
+    @Pattern(regexp = "^[0-5][0-9]:[0-5][0-9]$", message = "Duration must be in mm:ss format with leading zeros")
     private String duration;
 
 

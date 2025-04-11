@@ -1,5 +1,6 @@
 package com.song.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import java.util.Map;
  */
 @Data
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponseDto {
     private final String errorMessage;
     private final Map<String, String> details; // nullable if not needed

@@ -9,11 +9,10 @@ import org.apache.coyote.BadRequestException;
 import org.apache.tika.exception.TikaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -27,8 +26,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(),
-                "Invalid value " + ex.getValue() +
-                        " for " + ex.getName() + ".Must be a positive integer", null);
+                "Invalid value " + "'" + ex.getValue() + "'" +
+                        " for " + ex.getName().toUpperCase() + ". Must be a positive integer", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -45,7 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
         log.error("Resource not found: " + ex.getMessage());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.NOT_FOUND.value(), ex.getMessage(), null);
+        ErrorResponseDto errorResponse = new ErrorResponseDto(HttpStatus.NOT_FOUND.value(), "Resource with ID=" + ex.getMessage() + " not found", null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -53,26 +52,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleNumberFormatException(NumberFormatException ex) {
         ErrorResponseDto errorResponse = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),
-                "Invalid ID format: " + ex.getMessage() +
+                "Invalid ID format: " + "'" +
+                        ex.getMessage().replaceAll(".*\"(.*)\".*", "$1") + "'" +
                         ". Only positive integers are allowed", null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler({MissingServletRequestPartException.class, MultipartException.class})
-    public ResponseEntity<Object> handleInvalidResourceException(Exception ex) {
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidResourceException(Exception ex) {
         ErrorResponseDto errorResponse;
-        if (ex instanceof MultipartException) {
-            errorResponse = new ErrorResponseDto(
-                    HttpStatus.BAD_REQUEST.value(),
-                    "Invalid file format: application/json. Only MP3 files are allowed", null
-            );
-        } else {
-            errorResponse = new ErrorResponseDto(
-                    HttpStatus.BAD_REQUEST.value(),
-                    "An unexpected error occurred: " + ex.getMessage(), null
-            );
-        }
+        errorResponse = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid file format: application/json. Only MP3 files are allowed", null
+        );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
