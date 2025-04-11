@@ -2,6 +2,7 @@ package com.project.resourceservice.exception.handler;
 
 import com.project.resourceservice.dto.ErrorResponseDto;
 import com.project.resourceservice.exception.CSVStringException;
+import com.project.resourceservice.exception.InvalidFileFormatException;
 import com.project.resourceservice.exception.ResourceNotFoundException;
 import com.project.resourceservice.exception.RestClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.apache.coyote.BadRequestException;
 import org.apache.tika.exception.TikaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,7 +38,7 @@ public class GlobalExceptionHandler {
         log.error("--unexpected error occured: " + ex.getMessage());
         ErrorResponseDto errorResponse = new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred: " + ex.getMessage(), null
+                "An unexpected error occurred: ", null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -59,7 +61,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    @ExceptionHandler({HttpMediaTypeNotSupportedException.class, InvalidFileFormatException.class, HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponseDto> handleInvalidResourceException(Exception ex) {
         ErrorResponseDto errorResponse;
         errorResponse = new ErrorResponseDto(
