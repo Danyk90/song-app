@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
@@ -49,19 +50,42 @@ public class Mp3FileService {
         this.songServiceProperties = songServiceProperties;
     }
 
-    private void validateMp3File(MultipartFile file) {
-        if (file.isEmpty() || !Objects.requireNonNull(file.getOriginalFilename()).endsWith(".mp3")) {
-            throw new InvalidFileFormatException("Invalid MP3 file format");
-        }
+    private void validateMp3File(byte[] file) throws IOException {
+        // Check if the file is empty
+            if (file == null || file.length == 0) {
+                throw new InvalidFileFormatException("File is empty");
+            }
+
+            // Check file signature (magic numbers)
+           /* if (file.length < 2 || (file[0] & 0xFF) != 0xFF || (file[1] & 0xE0) != 0xE0) {
+                throw new InvalidFileFormatException("Invalid MP3 file format");
+            }*/
+
+            // Use Apache Tika to validate MP3 content
+            try (InputStream input = new ByteArrayInputStream(file)) {
+                Metadata metadata = new Metadata();
+                Mp3Parser parser = new Mp3Parser();
+                parser.parse(input, new DefaultHandler(), metadata, new ParseContext());
+
+                // Optionally, check for specific metadata fields
+                if (metadata.get("xmpDM:duration") == null) {
+                    throw new InvalidFileFormatException("Invalid MP3 file content");
+                }
+            } catch (TikaException e) {
+                throw new RuntimeException(e);
+            } catch (SAXException e) {
+                throw new RuntimeException(e);
+            }
     }
 
-    public Mp3FileResponseDto saveMp3File(MultipartFile file) throws IOException, TikaException, SAXException {
+    public Mp3FileResponseDto saveMp3File(byte[] file) throws IOException, TikaException, SAXException {
+
         validateMp3File(file);
         Mp3MetadataDto metadataDto = new Mp3MetadataDto();
-        metadataDto.setData(file.getBytes());
+        metadataDto.setData(file);
 
         // Extract metadata using Apache Tika
-        InputStream input = new ByteArrayInputStream(file.getBytes());
+        InputStream input = new ByteArrayInputStream(file);
         Metadata metadata = new Metadata();
         Mp3Parser parser = new Mp3Parser();
         parser.parse(input, new DefaultHandler(), metadata, new ParseContext());
@@ -69,25 +93,19 @@ public class Mp3FileService {
         metadataDto.setTitle(metadata.get("dc:title"));
         metadataDto.setArtist(metadata.get("xmpDM:artist"));
         metadataDto.setAlbum(metadata.get("xmpDM:album"));
-        metadataDto.setName(file.getOriginalFilename());
+        //metadataDto.setName(file.toString().);
 
         metadataDto.setDuration(DurationFormatter.formatDuration(metadata.get("xmpDM:duration")));
         metadataDto.setYear(metadata.get("xmpDM:releaseDate"));
         Mp3File mp3File = Mp3File.create(metadataDto.getData());
         Mp3File savedFile = mp3FileRepository.save(mp3File);
         metadataDto.setId(savedFile.getId());
-        try {
-            log.info("--songserviceurl--" + songServiceProperties.getUrl());
-            restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
-        } catch (org.springframework.web.client.HttpClientErrorException e) {
-            throw new RestClientException("Error from RestClient: " + e.getResponseBodyAsString(),
-                    e.getStatusCode().value(),
-                    e.getResponseBodyAsString());
-        }
+        log.info("--songserviceurl--" + songServiceProperties.getUrl());
+        restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
         return Mp3FileToResponseDtoMapper.mapToResponseDto(savedFile);
     }
 
-    public ResponseEntity<?> findById(Long id) {
+    public ResponseEntity<byte[]> findById(Long id) {
         if (id <= 0) {
             throw new MethodArgumentTypeMismatchException(id, Long.class, "id", null, new IllegalArgumentException());
         }
@@ -95,7 +113,6 @@ public class Mp3FileService {
         if (mp3File.isPresent()) {
 
             return ResponseEntity.ok(mp3File.get().getData());
-            //return restClient.fetchSongMetadata("http://localhost:8090/songs", id);
         }
         throw new ResourceNotFoundException("Resource with id:" + id + " not found");
     }

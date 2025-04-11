@@ -8,6 +8,7 @@ import com.song.service.exception.ResourceAlreadyExistException;
 import com.song.service.exception.ResourceNotFoundException;
 import com.song.service.util.MetaDataDtoToEntityMapper;
 import com.song.service.repo.SongsMetaDataRepository;
+import com.song.service.util.SongsEntityToSongsDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,33 +24,30 @@ public class SongsMetaDataService {
         this.songsMetaDataRepository = songsMetaDataRepository;
     }
 
-    public List<SongsMetaDataEntity> findAll() {
-        return songsMetaDataRepository.findAll();
-    }
-
-    public Optional<SongsMetaDataEntity> findById(Long id) {
+    public SongsDTO findById(Long id) {
 
         Optional<SongsMetaDataEntity> songsMetaDataEntity = songsMetaDataRepository.findById(id);
 
         if (songsMetaDataEntity.isPresent()) {
-            return songsMetaDataEntity;
+            return SongsEntityToSongsDtoMapper.toDto(songsMetaDataEntity.get());
         } else {
             throw new ResourceNotFoundException("Song metadata for ID=" + id + " not found");
         }
 
     }
 
-    public ResponseEntity<?> save(SongsDTO songsDTO) {
+    public ResponseEntity<SongsDTO> save(SongsDTO songsDTO) {
         //  SongMetadataRequestValidator.validate(songsDTO);
 
         if (songsMetaDataRepository.findById(songsDTO.getId()).isPresent()) {
             throw new ResourceAlreadyExistException("Metadata for resource ID:" + songsDTO.getId() + " already exists.");
         }
         SongsMetaDataEntity songsMetaDataEntity = MetaDataDtoToEntityMapper.toEntity(songsDTO);
-        return ResponseEntity.ok(songsMetaDataRepository.save(songsMetaDataEntity));
+        songsMetaDataRepository.save(songsMetaDataEntity);
+        return ResponseEntity.ok(songsDTO);
     }
 
-    public ResponseEntity<?> deleteById(String ids) {
+    public ResponseEntity<Mp3IdListResponseDto> deleteById(String ids) {
         if (ids.length() > 200) {
             throw new CSVStringException("maximum allowed is 200");
         }

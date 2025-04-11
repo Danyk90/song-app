@@ -1,5 +1,6 @@
 package com.song.service.controller;
 
+import com.song.service.dto.Mp3IdListResponseDto;
 import com.song.service.dto.SongsDTO;
 import com.song.service.entity.SongsMetaDataEntity;
 import com.song.service.exception.CSVStringException;
@@ -21,35 +22,23 @@ public class SongServiceController {
     @Autowired
     private SongsMetaDataService songsMetaDataService;
 
-    @GetMapping
-    public List<SongsMetaDataEntity> getAllResources() {
-        return songsMetaDataService.findAll();
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<SongsMetaDataEntity> getResourceById(@PathVariable @Valid Long id) {
-        Optional<SongsMetaDataEntity> resource = songsMetaDataService.findById(id);
-        return resource.map(res -> ResponseEntity.ok(res)).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<SongsDTO> getResourceById(@PathVariable @Valid Long id) {
+        log.info("Fetching resource with ID: {}", id);
+
+        Optional<SongsDTO> resource = Optional.of(songsMetaDataService.findById(id));
+        return resource.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<?> createResource(@Valid @RequestBody SongsDTO songsDTO) {
-
-        return songsMetaDataService.save(songsDTO);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateResource(@PathVariable @Valid Long id, @RequestBody @Valid SongsDTO songsDTO) {
-
+    public ResponseEntity<SongsDTO> createResource(@Valid @RequestBody SongsDTO songsDTO) {
+        log.info("--create resources--");
         return songsMetaDataService.save(songsDTO);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteResources(@RequestParam @Valid String id) {
+    public ResponseEntity<Mp3IdListResponseDto> deleteResources(@RequestParam @Valid String id) {
         log.info("--delete resources--");
-        if (id.length() > 200) {
-            throw new CSVStringException("maximum allowed is 200");
-        }
         return songsMetaDataService.deleteById(id);
     }
 }

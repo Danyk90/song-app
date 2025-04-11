@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
-import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
@@ -22,17 +21,17 @@ public class Mp3FileController {
         this.mp3FileService = mp3FileService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> uploadMp3File(@RequestParam("file") MultipartFile file) throws IOException, TikaException, SAXException {
+   @PostMapping(consumes = "audio/mpeg")
+    public ResponseEntity<Mp3FileResponseDto> uploadMp3File(@RequestBody byte[] fileData) throws IOException, TikaException, SAXException {
 
-        Mp3FileResponseDto mp3File = mp3FileService.saveMp3File(file);
+        Mp3FileResponseDto mp3File = mp3FileService.saveMp3File(fileData);
         return ResponseEntity.ok(mp3File);
     }
 
     @GetMapping(path = "/{id}", produces = "audio/mpeg")
-    public ResponseEntity<?> getMp3FileById(@Valid @PathVariable Long id) {
-        return mp3FileService.findById(id);
+    public ResponseEntity<byte[]> getMp3FileById( @PathVariable Long id) {
 
+        return mp3FileService.findById(id);
     }
 
     @DeleteMapping
