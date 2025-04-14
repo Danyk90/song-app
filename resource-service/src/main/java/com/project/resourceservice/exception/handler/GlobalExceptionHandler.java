@@ -93,9 +93,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({IOException.class, TikaException.class, SAXException.class})
     public ResponseEntity<Object> handleFileProcessingExceptions(Exception ex) {
+        log.info("--unexpected file processing error occured: " + ex.getMessage());
         ErrorResponseDto errorResponse = new ErrorResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Mp3 file processing error: " + ex.getMessage(), null
+                "Mp3 file processing error: ", null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

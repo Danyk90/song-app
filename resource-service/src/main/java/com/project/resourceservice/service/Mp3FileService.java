@@ -63,6 +63,18 @@ public class Mp3FileService {
             if (metadata.get("xmpDM:duration") == null) {
                 throw new InvalidFileFormatException("Invalid MP3 file content");
             }
+            if (metadata.get("dc:title") == null) {
+                throw new InvalidFileFormatException("Invalid MP3 file content");
+            }
+            if (metadata.get("xmpDM:artist") == null) {
+                throw new InvalidFileFormatException("Invalid MP3 file content");
+            }
+            if (metadata.get("xmpDM:album") == null) {
+                throw new InvalidFileFormatException("Invalid MP3 file content");
+            }
+            if (metadata.get("xmpDM:releaseDate") == null) {
+                throw new InvalidFileFormatException("Invalid MP3 file content");
+            }
         } catch (TikaException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
