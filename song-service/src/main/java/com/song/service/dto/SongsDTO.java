@@ -16,11 +16,11 @@ public class SongsDTO {
     @Size(min = 1, max = 100)
     private String name;
 
-    @NotBlank
+    @NotNull(message = "Artist name is required")
     @Size(min = 1, max = 100)
     private String artist;
 
-    @NotBlank
+    @NotNull(message = "Album name is required")
     @Size(min = 1, max = 100)
     private String album;
 
