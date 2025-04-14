@@ -6,16 +6,20 @@ import com.song.service.entity.SongsMetaDataEntity;
 import com.song.service.exception.CSVStringException;
 import com.song.service.exception.ResourceAlreadyExistException;
 import com.song.service.exception.ResourceNotFoundException;
-import com.song.service.util.MetaDataDtoToEntityMapper;
 import com.song.service.repo.SongsMetaDataRepository;
+import com.song.service.util.MetaDataDtoToEntityMapper;
 import com.song.service.util.SongsEntityToSongsDtoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@Validated
 public class SongsMetaDataService {
 
     private final SongsMetaDataRepository songsMetaDataRepository;
@@ -36,8 +40,7 @@ public class SongsMetaDataService {
 
     }
 
-    public ResponseEntity<SongsDTO> save(SongsDTO songsDTO) {
-        //  SongMetadataRequestValidator.validate(songsDTO);
+    public ResponseEntity<SongsDTO> save(@Valid SongsDTO songsDTO) {
 
         if (songsMetaDataRepository.findById(songsDTO.getId()).isPresent()) {
             throw new ResourceAlreadyExistException("Metadata for resource ID:" + songsDTO.getId() + " already exists.");
