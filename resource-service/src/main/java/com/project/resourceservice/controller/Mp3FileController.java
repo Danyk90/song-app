@@ -20,7 +20,7 @@ public class Mp3FileController {
         this.mp3FileService = mp3FileService;
     }
 
-   @PostMapping(consumes = "audio/mpeg")
+    @PostMapping(consumes = "audio/mpeg")
     public ResponseEntity<Mp3FileResponseDto> uploadMp3File(@RequestBody byte[] fileData) throws IOException, TikaException, SAXException {
 
         Mp3FileResponseDto mp3File = mp3FileService.saveMp3File(fileData);
@@ -28,7 +28,7 @@ public class Mp3FileController {
     }
 
     @GetMapping(path = "/{id}", produces = "audio/mpeg")
-    public ResponseEntity<byte[]> getMp3FileById( @PathVariable Long id) {
+    public ResponseEntity<byte[]> getMp3FileById(@PathVariable Long id) {
 
         return mp3FileService.findById(id);
     }
