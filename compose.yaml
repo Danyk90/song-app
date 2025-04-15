@@ -1,21 +1,62 @@
 services:
   resource-db:
     image: postgres:17-alpine
-    environment:
-      POSTGRES_DB: resource-db
-      POSTGRES_USER: postgres  # Default, can be omitted if unchanged
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env.resource-db
+      #environment:
+      # POSTGRES_DB:  ${POSTGRES_DB} #resource-db
+      #POSTGRES_USER: ${POSTGRES_USER} #postgres  # Default, can be omitted if unchanged
+      #POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      #postgres
     ports:
-      - "5432:5432"  # Maps container port 5432 to host port 5432
+      - "5432:5432"  # Maps container port to host port using the value from .env.resource-db:5432"  # Maps container port 5432 to host port 5432
+    volumes:
+      - ./init-scripts/resource-db:/docker-entrypoint-initdb.d/
 
   song-db:
     image: postgres:17-alpine
-    environment:
-      POSTGRES_DB: song-db
-      POSTGRES_USER: postgres  # Default, can be omitted if unchanged
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env.song-db
+      # environment:
+      #  POSTGRES_DB: ${POSTGRES_DB}
+      # POSTGRES_USER: ${POSTGRES_USER}  # Default, can be omitted if unchanged
+      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"  # Maps container port 5432 to host port 5433 (to avoid conflict)
+    volumes:
+      - ./init-scripts/song-db:/docker-entrypoint-initdb.d/
+
+  resource-service:
+    build:
+      context: ./resource-service
+    container_name: resource-service
+    depends_on:
+      - resource-db
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.resource-service
+      #environment:
+      # SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      #SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      #SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      #SONG_SERVICE_URL: ${SONG_SERVICE_URL}
+
+
+  song-service:
+    build:
+      context: ./song-service
+    container_name: song-service
+    depends_on:
+      - song-db
+    ports:
+      - "8090:8080"
+    env_file:
+      - .env.song-service
+      #  environment:
+      #   SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      #  SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      # SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
 
 # Related settings for application.properties:
 # 

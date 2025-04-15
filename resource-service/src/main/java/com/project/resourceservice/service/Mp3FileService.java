@@ -105,7 +105,7 @@ public class Mp3FileService {
         Mp3File mp3File = Mp3File.create(metadataDto.getData());
         Mp3File savedFile = mp3FileRepository.save(mp3File);
         metadataDto.setId(savedFile.getId());
-        log.info("--songserviceurl--" + songServiceProperties.getUrl());
+        log.info("-----songserviceurl--" + songServiceProperties.getUrl());
         restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
         return Mp3FileToResponseDtoMapper.mapToResponseDto(savedFile);
     }
@@ -116,7 +116,7 @@ public class Mp3FileService {
         }
         Optional<Mp3File> mp3File = mp3FileRepository.findById(id);
         if (mp3File.isPresent()) {
-
+            log.info("entity found with ID: {}", id);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_LENGTH,
                             String.valueOf(mp3File.get().getData().length))
