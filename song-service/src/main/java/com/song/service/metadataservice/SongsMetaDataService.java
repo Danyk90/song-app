@@ -10,6 +10,7 @@ import com.song.service.repo.SongsMetaDataRepository;
 import com.song.service.util.MetaDataDtoToEntityMapper;
 import com.song.service.util.SongsEntityToSongsDtoMapper;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @Validated
+@Slf4j
 public class SongsMetaDataService {
 
     private final SongsMetaDataRepository songsMetaDataRepository;
@@ -47,6 +49,7 @@ public class SongsMetaDataService {
         }
         SongsMetaDataEntity songsMetaDataEntity = MetaDataDtoToEntityMapper.toEntity(songsDTO);
         songsMetaDataRepository.save(songsMetaDataEntity);
+        log.info("Saved metadata for resource ID: {}", songsDTO.getId());
         return ResponseEntity.ok(songsDTO);
     }
 
@@ -59,6 +62,7 @@ public class SongsMetaDataService {
                 .filter(id -> songsMetaDataRepository.existsById(id))
                 .toList();
         songsMetaDataRepository.deleteAllById(idList);
+        log.info("deleted metadata for resource IDs: {}", idList);
         Mp3IdListResponseDto mp3IdListResponseDto = new Mp3IdListResponseDto(idList);
 
         return ResponseEntity.ok(mp3IdListResponseDto);
