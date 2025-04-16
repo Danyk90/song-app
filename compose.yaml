@@ -2,25 +2,16 @@ services:
   resource-db:
     image: postgres:17-alpine
     env_file:
-      - .env.resource-db
-      #environment:
-      # POSTGRES_DB:  ${POSTGRES_DB} #resource-db
-      #POSTGRES_USER: ${POSTGRES_USER} #postgres  # Default, can be omitted if unchanged
-      #POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      #postgres
+      - env/.env.resource-db
     ports:
-      - "5432:5432"  # Maps container port to host port using the value from .env.resource-db:5432"  # Maps container port 5432 to host port 5432
+      - "5432:5432"
     volumes:
       - ./init-scripts/resource-db:/docker-entrypoint-initdb.d/
 
   song-db:
     image: postgres:17-alpine
     env_file:
-      - .env.song-db
-      # environment:
-      #  POSTGRES_DB: ${POSTGRES_DB}
-      # POSTGRES_USER: ${POSTGRES_USER}  # Default, can be omitted if unchanged
-      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - env/.env.song-db
     ports:
       - "5433:5432"  # Maps container port 5432 to host port 5433 (to avoid conflict)
     volumes:
@@ -35,13 +26,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env.resource-service
-      #environment:
-      # SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      #SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      #SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      #SONG_SERVICE_URL: ${SONG_SERVICE_URL}
-
+      - env/.env.resource-service
 
   song-service:
     build:
@@ -50,22 +35,6 @@ services:
     depends_on:
       - song-db
     ports:
-      - "8090:8080"
+      - "8090:8090"
     env_file:
-      - .env.song-service
-      #  environment:
-      #   SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      #  SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      # SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-
-# Related settings for application.properties:
-# 
-# For resource-service:
-# spring.datasource.url=jdbc:postgresql://localhost:5432/resource-db
-# spring.datasource.username=postgres
-# spring.datasource.password=postgres
-#
-# For song-service:
-# spring.datasource.url=jdbc:postgresql://localhost:5433/song-db
-# spring.datasource.username=postgres
-# spring.datasource.password=postgres
+      - env/.env.song-service
