@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequestMapping("/songs")
 public class SongServiceController {
 
-    private SongsMetaDataService songsMetaDataService;
+    private final SongsMetaDataService songsMetaDataService;
 
     public SongServiceController(SongsMetaDataService songsMetaDataService) {
         this.songsMetaDataService = songsMetaDataService;
