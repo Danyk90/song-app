@@ -23,6 +23,7 @@ services:
     container_name: resource-service
     depends_on:
       - resource-db
+      - eureka-server
     ports:
       - "8080:8080"
     env_file:
@@ -31,10 +32,19 @@ services:
   song-service:
     build:
       context: ./song-service
-    container_name: song-service
     depends_on:
       - song-db
+      - eureka-server
     ports:
-      - "8090:8090"
+      - "8090"
     env_file:
       - env/.env.song-service
+
+  eureka-server:
+    build:
+      context: ./discovery-service
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    env_file:
+      - env/.env.eureka-server
