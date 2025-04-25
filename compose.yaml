@@ -47,4 +47,13 @@ services:
     ports:
       - "8761:8761"
     env_file:
-      - env/.env.eureka-server
+      - env/.env.eureka.server
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    depends_on:
+      - eureka-server
+    container_name: api-gateway
+    ports:
+      - "8088:8088"
