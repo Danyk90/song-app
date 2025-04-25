@@ -1,6 +1,6 @@
 package com.project.resourceservice.service;
 
-import com.project.resourceservice.client.RestClient;
+import com.project.resourceservice.client.SongServiceClient;
 import com.project.resourceservice.config.SongServiceProperties;
 import com.project.resourceservice.dto.Mp3FileResponseDto;
 import com.project.resourceservice.dto.Mp3IdListResponseDto;
@@ -38,12 +38,13 @@ public class Mp3FileService {
 
     private static final Logger log = LoggerFactory.getLogger(Mp3FileService.class);
     private final Mp3FileRepository mp3FileRepository;
-    private final RestClient restClient;
+    //private final RestClient restClient;
+    private final SongServiceClient songServiceClient;
     private final SongServiceProperties songServiceProperties;
 
-    public Mp3FileService(Mp3FileRepository mp3FileRepository, RestClient restClient, SongServiceProperties songServiceProperties) {
+    public Mp3FileService(Mp3FileRepository mp3FileRepository, SongServiceClient feignClient, SongServiceProperties songServiceProperties) {
         this.mp3FileRepository = mp3FileRepository;
-        this.restClient = restClient;
+        this.songServiceClient = feignClient;
         this.songServiceProperties = songServiceProperties;
     }
 
@@ -106,7 +107,8 @@ public class Mp3FileService {
         Mp3File savedFile = mp3FileRepository.save(mp3File);
         metadataDto.setId(savedFile.getId());
         log.info("-----songserviceurl--" + songServiceProperties.getUrl());
-        restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
+        songServiceClient.saveResource(metadataDto);
+        //       restClient.saveSongMetadata(songServiceProperties.getUrl(), metadataDto);
         return Mp3FileToResponseDtoMapper.mapToResponseDto(savedFile);
     }
 
@@ -133,7 +135,8 @@ public class Mp3FileService {
                 .map(Long::parseLong)
                 .filter(id -> mp3FileRepository.existsById(id))
                 .toList();
-        restClient.deleteSongMetadata(songServiceProperties.getUrl(), ids);
+        songServiceClient.deleteResource(ids);
+//        restClient.deleteSongMetadata(songServiceProperties.getUrl(), ids);
         mp3FileRepository.deleteAllById(idList);
         Mp3IdListResponseDto mp3IdListResponseDto = new Mp3IdListResponseDto(idList);
         return ResponseEntity.ok(mp3IdListResponseDto);
