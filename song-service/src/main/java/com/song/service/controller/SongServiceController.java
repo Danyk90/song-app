@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,5 +39,12 @@ public class SongServiceController {
     public ResponseEntity<Mp3IdListResponseDto> deleteResources(@RequestParam String id) {
         log.info("--delete resources--");
         return songsMetaDataService.deleteById(id);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SongsDTO>> getResourcesByIds(@RequestParam List<Long> ids) {
+        log.info("Fetching resources with IDs: {}", ids);
+        List<SongsDTO> resources = songsMetaDataService.findByIds(ids);
+        return ResponseEntity.ok(resources);
     }
 }

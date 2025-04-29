@@ -42,6 +42,13 @@ public class SongsMetaDataService {
 
     }
 
+    public List<SongsDTO> findByIds(List<Long> ids) {
+        List<SongsMetaDataEntity> entities = songsMetaDataRepository.findAllById(ids);
+        return entities.stream()
+                .map(SongsEntityToSongsDtoMapper::toDto)
+                .toList();
+    }
+
     public ResponseEntity<SongsDTO> save(@Valid SongsDTO songsDTO) {
 
         if (songsMetaDataRepository.findById(songsDTO.getId()).isPresent()) {

@@ -127,6 +127,11 @@ public class Mp3FileService {
         throw new ResourceNotFoundException(id.toString());
     }
 
+    public List<Mp3MetadataDto> getAllResourcesWithMetadata() {
+        List<Mp3File> mp3Files = mp3FileRepository.findAll();
+        var ids = mp3Files.stream().map(Mp3File::getId).toList();
+        return songServiceClient.getResourcesByIds(ids);
+    }
     public ResponseEntity<Mp3IdListResponseDto> deleteByIds(String ids) {
         if (ids.length() > 200) {
             throw new CSVStringException("maximum allowed is 200");
